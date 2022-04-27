@@ -1,24 +1,14 @@
 #!/bin/bash
 
 ###################################################################
-#Script Name	  :
-#Description	  :
-#Args         	:
+#Script Name	  : Setup Flux Automated Image Updates
+#Description	  : Configures pointers to:
+#                 - prod and staging image repos to find the lastest tags
+#                 - github repo (with markers) to update latest tags
+#Args         	: None
 #Author       	: Dino Radulovic
 #Email         	: dino.radu@gmail.com
 ###################################################################
-
-# personal access token
-export GITHUB_TOKEN=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m
-
-IMAGE_REPOSITORY_NAME_STAGING=eks-ms-app-staging
-IMAGE_REPOSITORY_PATH_STAGING=ghcr.io/dinoradulovic/eks-ms-app-staging
-IMAGE_POLICY_NAME_STAGING=eks-ms-app-staging
-IMAGE_REPOSITORY_NAME_PRODUCTION=eks-ms-app-production
-IMAGE_REPOSITORY_PATH_PRODUCTION=ghcr.io/dinoradulovic/eks-ms-app-production
-IMAGE_POLICY_NAME_PRODUCTION=eks-ms-app-production
-IMAGE_UPDATE_NAME=eks-ms-app-infra
-GITHUB_APP_INFRA_REPO_REF=eks-ms-app-infra
 
 #######################################
 # Configures Automated Image Deployments for Staging and Production environments.
@@ -26,36 +16,25 @@ GITHUB_APP_INFRA_REPO_REF=eks-ms-app-infra
 # Creates ImagePolicy resource specifying the policy to calculate tha latest image version.
 # Creates ImageUpdateAutomation resource specifying git repo where marked manifests for image updates are located.
 # Globals:
-#   None
+#   APP_NAME,
+#   IMAGE_REPOSITORY_URL_STAGING, IMAGE_REPOSITORY_URL_PRODUCTION,
+#   APP_INFRA_REPO_NAME
 # Arguments:
 #   None
 #######################################
-function create_automated_image_deployments {
+function create_automated_image_updates {
   mkdir -p ./apps/image-update-automation/staging ./apps/image-update-automation/production
+
+  IMAGE_REPOSITORY_NAME_STAGING=$APP_NAME-staging
+  IMAGE_REPOSITORY_NAME_PRODUCTION=$APP_NAME-production
+  IMAGE_POLICY_NAME_STAGING=$APP_NAME-staging
+  IMAGE_POLICY_NAME_PRODUCTION=$APP_NAME-production
 
   IMAGE_REPOSITORY_EXPORT_PATH_STAGING=./apps/image-update-automation/staging/$IMAGE_REPOSITORY_NAME_STAGING-image-repository.yaml
   IMAGE_REPOSITORY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_REPOSITORY_NAME_PRODUCTION-image-repository.yaml
   IMAGE_POLICY_EXPORT_PATH_STAGING=./apps/image-update-automation/staging/$IMAGE_POLICY_NAME_STAGING-image-policy.yaml
   IMAGE_POLICY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_POLICY_NAME_PRODUCTION-image-policy.yaml
-  IMAGE_UPDATE_EXPORT_PATH=./apps/image-update-automation/$IMAGE_UPDATE_NAME-image-update.yaml
-
-  # IMAGE_REPOSITORY_NAME_STAGING=eks-ms-app-staging
-  # IMAGE_REPOSITORY_PATH_STAGING=ghcr.io/dinoradulovic/eks-ms-app-staging
-  # IMAGE_REPOSITORY_EXPORT_PATH_STAGING=./apps/image-update-automation/staging/$IMAGE_REPOSITORY_NAME_STAGING-image-repository.yaml
-
-  # IMAGE_POLICY_NAME_STAGING=eks-ms-app-staging
-  # IMAGE_POLICY_EXPORT_PATH_STAGING=./apps/image-update-automation/staging/$IMAGE_POLICY_NAME_STAGING-image-policy.yaml
-
-  # IMAGE_REPOSITORY_NAME_PRODUCTION=eks-ms-app-production
-  # IMAGE_REPOSITORY_PATH_PRODUCTION=ghcr.io/dinoradulovic/eks-ms-app-production
-  # IMAGE_REPOSITORY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_REPOSITORY_NAME_PRODUCTION-image-repository.yaml
-
-  # IMAGE_POLICY_NAME_PRODUCTION=eks-ms-app-production
-  # IMAGE_POLICY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_POLICY_NAME_PRODUCTION-image-policy.yaml
-
-  # IMAGE_UPDATE_NAME=eks-ms-app-infra
-  # GITHUB_APP_INFRA_REPO_REF=eks-ms-app-infra
-  # IMAGE_UPDATE_EXPORT_PATH=./apps/image-update-automation/eks-ms-app-infra-automation.yaml
+  IMAGE_UPDATE_EXPORT_PATH=./apps/image-update-automation/$APP_INFRA_REPO_NAME-image-update.yaml
 
   if [ ! -d "./apps/flux-system" ]; then
     echo "Error: Make sure your are in a flux boostraped directory."
@@ -63,7 +42,7 @@ function create_automated_image_deployments {
   fi
 
   flux create image repository $IMAGE_REPOSITORY_NAME_STAGING \
-    --image=$IMAGE_REPOSITORY_PATH_STAGING \
+    --image=$IMAGE_REPOSITORY_URL_STAGING \
     --interval=1m \
     --export >$IMAGE_REPOSITORY_EXPORT_PATH_STAGING
 
@@ -75,7 +54,7 @@ function create_automated_image_deployments {
     --export >$IMAGE_POLICY_EXPORT_PATH_STAGING
 
   flux create image repository $IMAGE_REPOSITORY_NAME_PRODUCTION \
-    --image=$IMAGE_REPOSITORY_PATH_PRODUCTION \
+    --image=$IMAGE_REPOSITORY_URL_PRODUCTION \
     --interval=1m \
     --export >$IMAGE_REPOSITORY_EXPORT_PATH_PRODUCTION
 
@@ -86,8 +65,8 @@ function create_automated_image_deployments {
     --filter-extract='$ts' \
     --export >$IMAGE_POLICY_EXPORT_PATH_PRODUCTION
 
-  flux create image update $IMAGE_UPDATE_NAME \
-    --git-repo-ref=$GITHUB_APP_INFRA_REPO_REF \
+  flux create image update $APP_INFRA_REPO_NAME \
+    --git-repo-ref=$APP_INFRA_REPO_NAME \
     --git-repo-path="./" \
     --checkout-branch=master \
     --push-branch=master \
@@ -97,4 +76,4 @@ function create_automated_image_deployments {
     --export >$IMAGE_UPDATE_EXPORT_PATH
 }
 
-create_automated_image_deployments
+create_automated_image_updates

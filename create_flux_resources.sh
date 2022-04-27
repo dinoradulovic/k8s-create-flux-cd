@@ -2,48 +2,43 @@
 
 ###################################################################
 #Script Name	  : Create Flux Resources
-#Description	  : Generates necessary files for setting up GitOps CD
-#Args         	:
+#Description	  : Generates files(flux crds) for setting up GitOps CD
+#Args         	: None
 #Author       	: Dino Radulovic
 #Email         	: dino.radu@gmail.com
 ###################################################################
 
-
-GITHUB_USERNAME=dinoradulovic
-GITHUB_TOKEN=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
-
-SOURCE_NAME=eks-ms-app-infra
-SECRET_NAME=$SOURCE_NAME
-SOURCE_GITHUB_REPO=https://github.com/dinoradulovic/eks-ms-app-infra.git
-STAGING_KUSTOMIZATION_NAME=eks-ms-app-staging
-PRODUCTION_KUSTOMIZATION_NAME=eks-ms-app-production
+# generate all flux manifests into this folder
+MANIFESTS_EXPORT_PATH=./apps/deployments
 
 if [ ! -d "./apps/flux-system" ]; then
   echo "Error: Make sure your are in a flux boostraped directory."
   exit 1
 fi
 
-
 #######################################
 # Create a Source (GitRepository) for k8s manifests.
 # Globals:
-#   GITHUB_TOKEN
+#   GITHUB_USER, GITHUB_TOKEN,
+#   MANIFESTS_EXPORT_PATH,
+#   APP_INFRA_REPO_NAME, APP_INFRA_REPO_URL
 # Arguments:
 #   None
 #######################################
 function create_source_and_secret {
-  RESOURCES_EXPORT_PATH=./apps/deployments
-  SOURCE_EXPORT_PATH=$RESOURCES_EXPORT_PATH/$SOURCE_NAME-source.yaml
-  SECRET_EXPORT_PATH=$RESOURCES_EXPORT_PATH/$SECRET_NAME-secret.yaml
+  SECRET_NAME=$APP_INFRA_REPO_NAME
+  SOURCE_NAME=$APP_INFRA_REPO_NAME
+  SOURCE_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$SOURCE_NAME-source.yaml
+  SECRET_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$SECRET_NAME-secret.yaml
 
   flux create secret git $SECRET_NAME \
-    --url $SOURCE_GITHUB_REPO \
-    --username $GITHUB_USERNAME \
+    --url $APP_INFRA_REPO_URL \
+    --username $GITHUB_USER \
     --password $GITHUB_TOKEN \
     --export >$SECRET_EXPORT_PATH
 
   flux create source git $SOURCE_NAME \
-    --url $SOURCE_GITHUB_REPO \
+    --url $APP_INFRA_REPO_URL \
     --branch master \
     --interval 30s \
     --secret-ref $SECRET_NAME \
@@ -52,20 +47,23 @@ function create_source_and_secret {
 
 #######################################
 # Create a Kustomization resources for staging and production environments
-# referencing a path in Source object where the manifest are located.
+# referencing a path in Source object where the manifests are located.
 # Globals:
-#   None
+#   APP_INFRA_REPO_NAME,
+#   MANIFESTS_EXPORT_PATH
 # Arguments:
 #   None
 #######################################
 function create_kustomizations {
+  STAGING_KUSTOMIZATION_NAME=$APP_INFRA_REPO_NAME-staging
+  PRODUCTION_KUSTOMIZATION_NAME=$APP_INFRA_REPO_NAME-production
   STAGING_MANIFESTS_REPO_PATH="./deploy/overlay/staging"
-  STAGING_EXPORT_PATH=$RESOURCES_EXPORT_PATH/$STAGING_KUSTOMIZATION_NAME-staging.yaml
+  STAGING_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$STAGING_KUSTOMIZATION_NAME.yaml
   PRODUCTION_MANIFESTS_REPO_PATH="./deploy/overlay/production"
-  PRODUCTION_EXPORT_PATH=$RESOURCES_EXPORT_PATH/$PRODUCTION_KUSTOMIZATION_NAME-production.yaml
+  PRODUCTION_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$PRODUCTION_KUSTOMIZATION_NAME.yaml
 
   flux create kustomization $STAGING_KUSTOMIZATION_NAME \
-    --source $SOURCE_NAME \
+    --source $APP_INFRA_REPO_NAME \
     --path $STAGING_MANIFESTS_REPO_PATH \
     --prune true \
     --validation client \
@@ -73,7 +71,7 @@ function create_kustomizations {
     --export >$STAGING_EXPORT_PATH
 
   flux create kustomization $PRODUCTION_KUSTOMIZATION_NAME \
-    --source $SOURCE_NAME \
+    --source $APP_INFRA_REPO_NAME \
     --path $PRODUCTION_MANIFESTS_REPO_PATH \
     --prune true \
     --validation client \
@@ -81,6 +79,6 @@ function create_kustomizations {
     --export >$PRODUCTION_EXPORT_PATH
 }
 
-mkdir -p $RESOURCES_EXPORT_PATH
+mkdir -p $MANIFESTS_EXPORT_PATH
 create_source_and_secret
 create_kustomizations
