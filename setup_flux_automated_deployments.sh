@@ -18,7 +18,6 @@
 # Globals:
 #   APP_NAME,
 #   IMAGE_REPOSITORY_URL_STAGING, IMAGE_REPOSITORY_URL_PRODUCTION,
-#   APP_INFRA_REPO_NAME
 # Arguments:
 #   None
 #######################################
@@ -34,7 +33,7 @@ function create_automated_image_updates {
   IMAGE_REPOSITORY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_REPOSITORY_NAME_PRODUCTION-image-repository.yaml
   IMAGE_POLICY_EXPORT_PATH_STAGING=./apps/image-update-automation/staging/$IMAGE_POLICY_NAME_STAGING-image-policy.yaml
   IMAGE_POLICY_EXPORT_PATH_PRODUCTION=./apps/image-update-automation/production/$IMAGE_POLICY_NAME_PRODUCTION-image-policy.yaml
-  IMAGE_UPDATE_EXPORT_PATH=./apps/image-update-automation/$APP_INFRA_REPO_NAME-image-update.yaml
+  IMAGE_UPDATE_EXPORT_PATH=./apps/image-update-automation/$APP_NAME-image-update.yaml
 
   if [ ! -d "./apps/flux-system" ]; then
     echo "Error: Make sure your are in a flux boostraped directory."
@@ -65,8 +64,8 @@ function create_automated_image_updates {
     --filter-extract='$ts' \
     --export >$IMAGE_POLICY_EXPORT_PATH_PRODUCTION
 
-  flux create image update $APP_INFRA_REPO_NAME \
-    --git-repo-ref=$APP_INFRA_REPO_NAME \
+  flux create image update $APP_NAME \
+    --git-repo-ref=$APP_NAME \
     --git-repo-path="./" \
     --checkout-branch=master \
     --push-branch=master \

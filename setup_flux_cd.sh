@@ -12,6 +12,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 . $SCRIPT_DIR/.env
 
+# name of the repo the flux is going to create for it's components
+FLUX_INFRA_REPO_NAME=$APP_NAME-flux-infra
+
 #######################################
 # Bootstraps GitHub repository(Flux Infra) with Flux toolkit components.
 # Inside of that repo, it generates YAML files for setting up:
@@ -26,7 +29,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 function main {
   cd $SCRIPT_DIR
   cd ../
-  $SCRIPT_DIR/bootstrap_flux.sh
+  $SCRIPT_DIR/bootstrap_flux.sh $FLUX_INFRA_REPO_NAME
   git clone git@github.com:$GITHUB_USER/$FLUX_INFRA_REPO_NAME.git
   cd ./$FLUX_INFRA_REPO_NAME
   $SCRIPT_DIR/create_flux_resources.sh
