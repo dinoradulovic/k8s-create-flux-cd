@@ -1,6 +1,6 @@
-# Scripts to set up CD with Flux CD 
+# Continious Delivery with Flux CD
 
-Flux is a technology that allows us to implement Continous Delivery in GitOps way.
+Contains scripts to set up FluxCD for Continous Delivery in GitOps way.
 
 It syncs the cluster with the described state in a Git repository. 
 
