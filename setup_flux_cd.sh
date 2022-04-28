@@ -32,9 +32,11 @@ function main {
   $SCRIPT_DIR/bootstrap_flux.sh $FLUX_INFRA_REPO_NAME
   git clone git@github.com:$GITHUB_USER/$FLUX_INFRA_REPO_NAME.git
   cd ./$FLUX_INFRA_REPO_NAME
+
   $SCRIPT_DIR/create_flux_resources.sh
   git add .
   git commit -m "Adds source, kustomizations and secret for production and staging env"
+
   $SCRIPT_DIR/setup_flux_automated_deployments.sh
   git add .
   git commit -m "Adds flux automated deployments"

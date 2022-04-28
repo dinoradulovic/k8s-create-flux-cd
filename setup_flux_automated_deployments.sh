@@ -22,8 +22,6 @@
 #   None
 #######################################
 function create_automated_image_updates {
-  mkdir -p ./apps/image-update-automation/staging ./apps/image-update-automation/production
-
   IMAGE_REPOSITORY_NAME_STAGING=$APP_NAME-staging
   IMAGE_REPOSITORY_NAME_PRODUCTION=$APP_NAME-production
   IMAGE_POLICY_NAME_STAGING=$APP_NAME-staging
@@ -75,4 +73,5 @@ function create_automated_image_updates {
     --export >$IMAGE_UPDATE_EXPORT_PATH
 }
 
+mkdir -p ./apps/image-update-automation/staging ./apps/image-update-automation/production
 create_automated_image_updates
