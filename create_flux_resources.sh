@@ -58,7 +58,7 @@ function create_kustomizations {
   STAGING_KUSTOMIZATION_NAME=$APP_NAME-staging
   PRODUCTION_KUSTOMIZATION_NAME=$APP_NAME-production
   STAGING_MANIFESTS_REPO_PATH="./deploy/overlay/staging"
-  STAGING_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$STAGING_KUSTOMIZATION_NAME-kustomization.yaml
+  KUSTOMIZATION_STAGING_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$STAGING_KUSTOMIZATION_NAME-kustomization.yaml
   PRODUCTION_MANIFESTS_REPO_PATH="./deploy/overlay/production"
   PRODUCTION_EXPORT_PATH=$MANIFESTS_EXPORT_PATH/$PRODUCTION_KUSTOMIZATION_NAME-kustomization.yaml
 
@@ -68,7 +68,7 @@ function create_kustomizations {
     --prune true \
     --validation client \
     --interval 1m \
-    --export >$STAGING_EXPORT_PATH
+    --export >$KUSTOMIZATION_STAGING_EXPORT_PATH
 
   flux create kustomization $PRODUCTION_KUSTOMIZATION_NAME \
     --source $APP_NAME \

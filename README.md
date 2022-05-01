@@ -2,16 +2,14 @@
 
 Contains scripts to set up FluxCD for Continous Delivery in GitOps way.
 
-It syncs the cluster with the described state in a Git repository. 
+It syncs the cluster with the described state in a Git repository.
 
 It works by installing Flux toolkit inside the cluster, which then monitors specified Git repository that contains Kubernetes manifest files and applies them to the cluster.
 
 Contains scripts for:
 - Bootstraping Flux
 - Creating Flux Sources and Kustomizations
-- Setting up "Automated Image Deployments"
-
-
+- Setting up "Automated Image Deployments" (for two example microservices)
 
 ## Boostraping Flux 
 
@@ -35,11 +33,11 @@ Sources and Kustomizations are [CRDs](https://kubernetes.io/docs/concepts/extend
 
 ## Setting up Automated Image Deploymnents
 
-Besides keeping our cluster in sync with Git repository, Flux can also do automatic image updates to the repository, after we build our image. 
+Besides keeping the cluster in sync with Git repository, FluxCD can also do automatic image updates to the git repository, after the image is built and pushed to image repository. 
 
 It monitors the specified image repository for changes, and it updates kubernetes manifest files in the Git repo, which triggers the syncing process between the cluster and the repo. 
 
 For that purpose, it's necessary to create following [CRDs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/):
-- ImageRepository - to tell which image registry to monitor
-- ImagePolicy - to tell which tagging policy is used so it can figure out the last image
-- ImageUpdateAutomation - to tell which Git repository to write image updates to
+- ImageRepository - to tell Flux which image registry to monitor
+- ImagePolicy - to tell Flux which tagging policy is used so it can figure out the last image
+- ImageUpdateAutomation - to tell Flux which Git repository to write image updates to
