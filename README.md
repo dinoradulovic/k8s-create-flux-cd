@@ -1,5 +1,15 @@
 # Continious Delivery with Flux CD
 
+This repo is part of the bundle. 
+
+| PARAM | NOTES |
+| ------ | ------ |
+| k8s-create-eks-fargate | scripts to create Kubernetes cluster on EKS with Fargate |
+| **k8s-create-flux-cd** | **scripts to setup GitOps with FluxCD** |
+| k8s-microservice-one | first sample microservice to be deployed into cluster |
+| k8s-microservice-two | second sample microservice to be deployed into cluster |
+| k8s-microservices-app-infra | infrastructure manifest files for two microservices app |
+
 Contains scripts to set up FluxCD for Continous Delivery in GitOps way.
 
 It syncs the cluster with the described state in a Git repository.
