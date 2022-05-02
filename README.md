@@ -58,7 +58,7 @@ For that purpose, it's necessary to create following [CRDs](https://kubernetes.i
 
 ```flux uninstall --namespace=flux-system```
 
-This command uninstalls Flux components, CRD's and namespace, but it wouldn't affect any app resources preivously created with Flux. 
+This command uninstalls Flux components, CRD's and namespace, but it doesn't affect any app resources preivously created with Flux. 
 
 
 
