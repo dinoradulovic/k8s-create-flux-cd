@@ -52,3 +52,13 @@ For that purpose, it's necessary to create following [CRDs](https://kubernetes.i
 - ImageRepository - to tell Flux which image registry to monitor
 - ImagePolicy - to tell Flux which tagging policy is used so it can figure out the last image
 - ImageUpdateAutomation - to tell Flux which Git repository to write image updates to
+
+
+## Uninstalling Flux 
+
+```flux uninstall --namespace=flux-system```
+
+This command uninstalls Flux components, CRD's and namespace, but it wouldn't affect any app resources preivously created with Flux. 
+
+
+
