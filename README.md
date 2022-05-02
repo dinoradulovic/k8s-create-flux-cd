@@ -14,7 +14,7 @@ Contains scripts to set up FluxCD for Continous Delivery in GitOps way.
 
 It syncs the cluster with the described state in a Git repository.
 
-It works by installing Flux toolkit inside the cluster, which then monitors specified Git repository that contains Kubernetes manifest files and applies them to the cluster.
+It works by installing Flux toolkit inside the cluster, which then monitors the specified Git repository that contains Kubernetes manifest files and applies them to the cluster.
 
 Contains scripts for:
 - Bootstraping Flux
@@ -23,14 +23,14 @@ Contains scripts for:
 
 ## Boostraping Flux 
 
-Installs Flux on the target cluster.
+Installs FluxCD on the target cluster.
 
-Creates GitHub repository and commits the flux manifests, which then get applied to the cluster and install Flux.
+Creates GitHub repository and commits the flux manifests, which then get applied to the cluster and install FluxCD.
 
 
 > ***Important***  This is not the same as applying Kubernetes manifests to define your app infrastructure (that is the next step). 
-This is just the way of installing Flux. 
-Basically, Flux is applying GitOps on itself here - it creates a Git repo containing files that will be added to the cluster in order to install Flux. 
+This is just the way of installing FluxCD. 
+Basically, FluxCD is applying GitOps on itself here - it creates a Git repo containing files that will be added to the cluster in order to install FluxCD. 
 
 
 ## Creating Flux Sources and Kustomizations 
@@ -38,6 +38,7 @@ Basically, Flux is applying GitOps on itself here - it creates a Git repo contai
 Sources and Kustomizations are [CRDs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) created by Flux. 
 
 **Source** - pointer to the app infra repo
+
 **Kustomization** - pointer to the directory inside the Source repo where "kustomize build" should be run
 
 
